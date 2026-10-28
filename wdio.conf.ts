@@ -27,7 +27,16 @@ export const config: WebdriverIO.Config = {
   baseUrl: process.env.BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? 4173}`,
   waitforTimeout: 5_000,
   framework: 'mocha',
-  reporters: ['spec'],
+  reporters: [
+    'spec',
+    ['junit', {
+      outputDir: 'artifacts/test-results',
+      outputFileFormat: ({ cid, capabilities }) => {
+        const browserName = 'browserName' in capabilities ? capabilities.browserName : 'browser'
+        return `results-${cid}-${String(browserName)}.xml`
+      },
+    }],
+  ],
   mochaOpts: {
     ui: 'bdd',
     timeout: 30_000,
