@@ -23,6 +23,7 @@ export interface DiagnosticsBrowser {
   sessionSubscribe(options: { events: string[] }): Promise<unknown>
   on(eventName: string, listener: (event: unknown) => void): unknown
   off(eventName: string, listener: (event: unknown) => void): unknown
+  addCommand(name: string, callback: (...args: unknown[]) => unknown): unknown
   getUrl(): Promise<string>
   saveScreenshot(path: string): Promise<unknown>
 }
@@ -58,6 +59,8 @@ export class FailureDiagnostics {
 
   async start(browser: DiagnosticsBrowser): Promise<void> {
     this.reset()
+    browser.addCommand('getCapturedNetworkEvents', () => [...this.network])
+    browser.addCommand('getCapturedBrowserLogs', () => [...this.logs])
     this.logCaptureStatus = 'unavailable: this session does not support WebDriver BiDi'
     this.networkCaptureStatus = 'unavailable: this session does not support WebDriver BiDi'
     if (!browser.isBidi) return
