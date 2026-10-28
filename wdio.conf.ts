@@ -6,6 +6,7 @@ const browserNames = requestedBrowsers?.length ? requestedBrowsers : ['chrome']
 const supportedBrowsers = new Set(['chrome', 'firefox'])
 const unsupportedBrowsers = browserNames.filter((name) => !supportedBrowsers.has(name))
 const testCategory = process.env.TEST_CATEGORY?.trim().toLowerCase()
+const headless = ['1', 'true'].includes(process.env.HEADLESS?.trim().toLowerCase() ?? '')
 const supportedCategories = new Set(['smoke', 'regression'])
 const failureDiagnostics = new FailureDiagnostics()
 const diagnosticsBrowser = browser as unknown as DiagnosticsBrowser
@@ -22,7 +23,13 @@ export const config: WebdriverIO.Config = {
   runner: 'local',
   specs: ['./test/specs/**/*.e2e.ts'],
   maxInstances: 1,
-  capabilities: browserNames.map((browserName) => ({ browserName })),
+  capabilities: browserNames.map((browserName) => {
+    if (!headless) return { browserName }
+    if (browserName === 'chrome') {
+      return { browserName, 'goog:chromeOptions': { args: ['--headless=new'] } }
+    }
+    return { browserName, 'moz:firefoxOptions': { args: ['-headless'] } }
+  }),
   logLevel: 'warn',
   baseUrl: process.env.BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? 4173}`,
   waitforTimeout: 5_000,

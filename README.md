@@ -57,6 +57,8 @@ Run only the fast store-page check with `npm run test:smoke`, or run the full ch
 
 Run the complete suite in Chrome and Firefox with `npm run test:cross-browser`; both browsers must be installed locally. You can also combine a category and browser list, for example `node ./scripts/run-tests.mjs smoke --browsers chrome,firefox`.
 
+Run Chrome without opening a browser window with `npm run test:headless`. Add `--browsers chrome,firefox` to the command to run both browsers headlessly. Headless mode can also be enabled for a direct WebdriverIO run with `HEADLESS=true`.
+
 Each WebdriverIO run writes a JUnit XML report per browser under `artifacts/test-results/`. The report is suitable for test dashboards and is ignored by Git along with failure evidence.
 
 ### Quality Intelligence
