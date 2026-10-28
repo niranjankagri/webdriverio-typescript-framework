@@ -57,6 +57,16 @@ Run only the fast store-page check with `npm run test:smoke`, or run the full ch
 
 Each WebdriverIO run writes a JUnit XML report per browser under `artifacts/test-results/`. The report is suitable for test dashboards and is ignored by Git along with failure evidence.
 
+### Quality Intelligence
+
+The optional `quality/catalog.toml` maps the smoke and checkout tests to stable test IDs and demo-shop requirements. To add a local run to [Automation Coverage & Quality Intelligence](https://github.com/niranjankagri/automation-coverage-quality-intelligence), run these commands from its checkout, replacing `/path/to/webdriverio-typescript-framework` with this repository's path:
+
+```sh
+qi history import /path/to/webdriverio-typescript-framework/artifacts/test-results \\
+  --catalog /path/to/webdriverio-typescript-framework/quality/catalog.toml
+qi dashboard --catalog /path/to/webdriverio-typescript-framework/quality/catalog.toml
+```
+
 Chrome is the default browser. Set `BROWSERS=chrome,firefox` to run the same scenario in both browsers. Set `BASE_URL` to point the suite at an already-running demo or another compatible environment. For manual browsing, the demo listens on `127.0.0.1:4173`; `PORT` can change that port.
 
 ## Failure evidence
