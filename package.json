@@ -8,6 +8,7 @@
     "node": ">=22.19.0"
   },
   "scripts": {
+    "demo": "tsx src/demo/server.ts",
     "typecheck": "tsc --noEmit",
     "test": "wdio run ./wdio.conf.ts"
   },

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A small local shop for practicing reliable browser automation.">
+    <title>Northstar Supply | Demo Shop</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label="Northstar Supply home">NORTHSTAR <span>SUPPLY</span></a>
+      <p class="demo-label">LOCAL DEMO SHOP</p>
+    </header>
+
+    <main class="page-shell">
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow">A LITTLE BETTER EVERY DAY</p>
+        <h1 id="page-title">Useful things for a focused day.</h1>
+        <p class="intro-copy">A tiny, self-contained shop built for exploring a real customer journey in a local browser.</p>
+      </section>
+
+      <div class="shop-layout">
+        <section class="products-panel" aria-labelledby="products-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">THE SMALL COLLECTION</p>
+              <h2 id="products-title">Shop the essentials</h2>
+            </div>
+            <p class="item-count" id="item-count">Loading products…</p>
+          </div>
+          <div class="product-grid" id="products" aria-live="polite"></div>
+        </section>
+
+        <aside class="cart-panel" aria-labelledby="cart-title">
+          <div class="cart-heading">
+            <h2 id="cart-title">Your bag</h2>
+            <span class="cart-count" id="cart-count" aria-label="0 items">0</span>
+          </div>
+          <p class="cart-empty" id="cart-empty">Your bag is waiting for something useful.</p>
+          <ul class="cart-items" id="cart-items" aria-label="Items in your bag"></ul>
+          <p class="cart-total" id="cart-total" hidden></p>
+
+          <form id="checkout-form" class="checkout-form" hidden>
+            <h3>Checkout</h3>
+            <label for="customer-name">Your name</label>
+            <input id="customer-name" name="customerName" autocomplete="name" required minlength="2" maxlength="80">
+            <label for="customer-email">Email address</label>
+            <input id="customer-email" name="email" type="email" autocomplete="email" required>
+            <button class="place-order-button" type="submit">Place order</button>
+          </form>
+          <p class="message" id="message" role="status" aria-live="polite"></p>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="site-footer">Northstar Supply is a local demo application. No payment is collected.</footer>
+  </body>
+</html>
