@@ -59,7 +59,7 @@ Run the complete suite in Chrome and Firefox with `npm run test:cross-browser`; 
 
 Run Chrome without opening a browser window with `npm run test:headless`. Add `--browsers chrome,firefox` to the command to run both browsers headlessly. Headless mode can also be enabled for a direct WebdriverIO run with `HEADLESS=true`.
 
-Each WebdriverIO run writes a JUnit XML report per browser under `artifacts/test-results/`. The report is suitable for test dashboards and is ignored by Git along with failure evidence.
+Each WebdriverIO run writes a JUnit XML report per browser under `artifacts/test-results/` and Allure result files under `artifacts/allure-results/`. Allure results include stable test IDs, browser and Node.js version metadata, and sanitized failure diagnostics with a screenshot attachment when capture succeeds. Both output directories are ignored by Git along with failure evidence. If the Allure CLI is installed, generate a browsable report with `allure generate artifacts/allure-results --clean -o artifacts/allure-report`.
 
 ### Quality Intelligence
 

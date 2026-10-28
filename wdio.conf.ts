@@ -1,4 +1,7 @@
 import { browser } from '@wdio/globals'
+import { addAttachment, addFeature, addTestId } from '@wdio/allure-reporter'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import { FailureDiagnostics, type DiagnosticsBrowser } from './test/support/failure-diagnostics.js'
 
 const requestedBrowsers = process.env.BROWSERS?.split(',').map((name) => name.trim().toLowerCase()).filter(Boolean)
@@ -43,6 +46,14 @@ export const config: WebdriverIO.Config = {
         return `results-${cid}-${String(browserName)}.xml`
       },
     }],
+    ['allure', {
+      outputDir: 'artifacts/allure-results',
+      disableWebdriverStepsReporting: true,
+      reportedEnvironmentVars: {
+        NODE_VERSION: process.version,
+        BROWSERS: browserNames.join(', '),
+      },
+    }],
   ],
   mochaOpts: {
     ui: 'bdd',
@@ -50,7 +61,12 @@ export const config: WebdriverIO.Config = {
     ...(testCategory ? { grep: new RegExp('\\[' + testCategory + '\\]', 'i') } : {}),
   },
   before: async () => failureDiagnostics.start(diagnosticsBrowser),
-  beforeTest: () => failureDiagnostics.reset(),
+  beforeTest: async (_test) => {
+    failureDiagnostics.reset()
+    await addFeature('Local shop checkout')
+    const testId = /\[(TC-\d+)\]/i.exec(_test.title)?.[1]
+    if (testId) await addTestId(testId)
+  },
   afterTest: async (_test, _context, { error }) => {
     if (!error) return
 
@@ -61,6 +77,13 @@ export const config: WebdriverIO.Config = {
         error,
         process.cwd(),
       )
+      const manifest = JSON.parse(await readFile(join(directory, 'run.json'), 'utf8')) as {
+        screenshot: string | null
+      }
+      await addAttachment('Failure diagnostics', manifest, 'application/json')
+      if (manifest.screenshot) {
+        await addAttachment('Failure screenshot', await readFile(join(directory, manifest.screenshot)), 'image/png')
+      }
       console.info(`Failure evidence saved to ${directory}`)
     } catch (captureError) {
       console.warn('Could not save failure evidence:', captureError)
