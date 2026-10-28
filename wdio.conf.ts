@@ -31,7 +31,7 @@ export const config: WebdriverIO.Config = {
   mochaOpts: {
     ui: 'bdd',
     timeout: 30_000,
-    ...(testCategory ? { grep: new RegExp('\\\\[' + testCategory + '\\\\]', 'i') } : {}),
+    ...(testCategory ? { grep: new RegExp('\\[' + testCategory + '\\]', 'i') } : {}),
   },
   before: async () => failureDiagnostics.start(diagnosticsBrowser),
   beforeTest: () => failureDiagnostics.reset(),
