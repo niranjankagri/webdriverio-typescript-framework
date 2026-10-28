@@ -34,5 +34,10 @@ describe('the local shop checkout', () => {
       timeout: 5_000,
       timeoutMsg: 'Expected the checkout order request to complete with HTTP 201',
     })
+
+    const browserErrors = (await browser.getCapturedBrowserLogs()).filter((entry) => (
+      entry.type === 'javascript' && entry.level === 'error'
+    ))
+    await expect(browserErrors).toEqual([])
   })
 })
