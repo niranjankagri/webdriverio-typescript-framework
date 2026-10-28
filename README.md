@@ -47,10 +47,14 @@ npm ci
 npm test
 ```
 
-`npm test` starts the demo shop on an available local port, waits for its health endpoint, runs WebdriverIO, and stops the server. To run the shop by itself for manual browsing, use:
+`npm test` starts the demo shop on an available local port, waits for its health endpoint, runs WebdriverIO, and stops the server. Run the focused diagnostics checks with `npm run test:unit`. To run the shop by itself for manual browsing, use:
 
 ```sh
 npm run demo
 ```
 
 Chrome is the default browser. Set `BROWSERS=chrome,firefox` to run the same scenario in both browsers. Set `BASE_URL` to point the suite at an already-running demo or another compatible environment. For manual browsing, the demo listens on `127.0.0.1:4173`; `PORT` can change that port.
+
+## Failure evidence
+
+Failed WebdriverIO tests write a screenshot and `run.json` under `artifacts/failures/`. The manifest records the test, browser and version, current page URL, error, and up to 250 browser-console and network event summaries. Network summaries keep method, sanitized URL, response status, and fetch errors; they omit request and response bodies, headers, and cookies. Common credential fields and email addresses are redacted before the manifest is written. The manifest reports when WebDriver BiDi log or network capture is unavailable.

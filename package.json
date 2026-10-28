@@ -12,6 +12,7 @@
     "demo": "node --import tsx src/demo/server.ts",
     "typecheck": "tsc --noEmit",
     "test": "node ./scripts/run-tests.mjs",
+    "test:unit": "node --import tsx --test ./test/support/diagnostics.test.ts",
     "test:wdio": "wdio run ./wdio.conf.ts"
   },
   "devDependencies": {
