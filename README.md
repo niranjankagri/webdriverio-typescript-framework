@@ -55,6 +55,8 @@ npm run demo
 
 Run only the fast store-page check with `npm run test:smoke`, or run the full checkout journey with `npm run test:regression`. `npm test` runs both categories.
 
+Each WebdriverIO run writes a JUnit XML report per browser under `artifacts/test-results/`. The report is suitable for test dashboards and is ignored by Git along with failure evidence.
+
 Chrome is the default browser. Set `BROWSERS=chrome,firefox` to run the same scenario in both browsers. Set `BASE_URL` to point the suite at an already-running demo or another compatible environment. For manual browsing, the demo listens on `127.0.0.1:4173`; `PORT` can change that port.
 
 ## Failure evidence
