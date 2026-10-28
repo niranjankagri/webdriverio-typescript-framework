@@ -16,6 +16,7 @@
     "test:regression": "node ./scripts/run-tests.mjs regression",
     "test:cross-browser": "node ./scripts/run-tests.mjs --browsers chrome,firefox",
     "test:headless": "node ./scripts/run-tests.mjs --headless",
+    "test:karate": "mvn -f api-tests/karate/pom.xml test",
     "test:unit": "node --import tsx --test ./test/support/diagnostics.test.ts",
     "test:mutation": "stryker run",
     "test:wdio": "wdio run ./wdio.conf.ts"

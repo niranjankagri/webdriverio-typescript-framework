@@ -57,6 +57,8 @@ Run only the fast store-page check with `npm run test:smoke`, or run the full ch
 
 Measure how well the diagnostic sanitization checks catch regressions with `npm run test:mutation`. Stryker mutates only `test/support/diagnostics.ts`, fails the run below a 75% mutation score, and writes its HTML and JSON reports under `artifacts/mutation/`.
 
+The optional Karate API contract suite lives under `api-tests/karate/`. Start the demo shop with `npm run demo`, then run `npm run test:karate` in another terminal. It uses Java 17 and Maven, writes its HTML report under `api-tests/karate/target/karate-reports/`, and reads `BASE_URL` when you want to target another compatible shop instance.
+
 Run the complete suite in Chrome and Firefox with `npm run test:cross-browser`; both browsers must be installed locally. You can also combine a category and browser list, for example `node ./scripts/run-tests.mjs smoke --browsers chrome,firefox`.
 
 Run Chrome without opening a browser window with `npm run test:headless`. Add `--browsers chrome,firefox` to the command to run both browsers headlessly. Headless mode can also be enabled for a direct WebdriverIO run with `HEADLESS=true`.
