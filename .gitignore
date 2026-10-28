@@ -1,6 +1,7 @@
 node_modules/
 coverage/
 artifacts/
+.stryker-tmp/
 logs/
 *.log
 .DS_Store

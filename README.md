@@ -55,6 +55,8 @@ npm run demo
 
 Run only the fast store-page check with `npm run test:smoke`, or run the full checkout journey with `npm run test:regression`. `npm test` runs both categories.
 
+Measure how well the diagnostic sanitization checks catch regressions with `npm run test:mutation`. Stryker mutates only `test/support/diagnostics.ts`, fails the run below a 75% mutation score, and writes its HTML and JSON reports under `artifacts/mutation/`.
+
 Run the complete suite in Chrome and Firefox with `npm run test:cross-browser`; both browsers must be installed locally. You can also combine a category and browser list, for example `node ./scripts/run-tests.mjs smoke --browsers chrome,firefox`.
 
 Run Chrome without opening a browser window with `npm run test:headless`. Add `--browsers chrome,firefox` to the command to run both browsers headlessly. Headless mode can also be enabled for a direct WebdriverIO run with `HEADLESS=true`.

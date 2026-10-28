@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "mutate": ["test/support/diagnostics.ts"],
+  "testRunner": "command",
+  "commandRunner": {
+    "command": "npm run test:unit"
+  },
+  "coverageAnalysis": "off",
+  "checkers": ["typescript"],
+  "reporters": ["clear-text", "html", "json"],
+  "htmlReporter": {
+    "fileName": "artifacts/mutation/index.html"
+  },
+  "jsonReporter": {
+    "fileName": "artifacts/mutation/mutation.json"
+  },
+  "thresholds": {
+    "high": 90,
+    "low": 80,
+    "break": 75
+  },
+  "concurrency": 2
+}

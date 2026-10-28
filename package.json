@@ -17,9 +17,12 @@
     "test:cross-browser": "node ./scripts/run-tests.mjs --browsers chrome,firefox",
     "test:headless": "node ./scripts/run-tests.mjs --headless",
     "test:unit": "node --import tsx --test ./test/support/diagnostics.test.ts",
+    "test:mutation": "stryker run",
     "test:wdio": "wdio run ./wdio.conf.ts"
   },
   "devDependencies": {
+    "@stryker-mutator/core": "^10.1.1",
+    "@stryker-mutator/typescript-checker": "^10.1.1",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.19.0",
     "@wdio/allure-reporter": "^10.1.0",
