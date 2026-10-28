@@ -60,6 +60,11 @@ class FakeBrowser extends EventEmitter implements DiagnosticsBrowser {
   capabilities = { browserName: 'chrome', browserVersion: '130.0' }
   sessionId = 'session-123'
   subscriptions: string[][] = []
+  commands = new Map<string, (...args: unknown[]) => unknown>()
+
+  addCommand(name: string, callback: (...args: unknown[]) => unknown): void {
+    this.commands.set(name, callback)
+  }
 
   async sessionSubscribe(options: { events: string[] }): Promise<unknown> {
     this.subscriptions.push(options.events)

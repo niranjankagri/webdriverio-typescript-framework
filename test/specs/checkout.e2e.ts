@@ -1,4 +1,4 @@
-import { expect } from '@wdio/globals'
+import { browser, expect } from '@wdio/globals'
 import { StorePage } from '../pages/StorePage.js'
 import { createTestCustomer } from '../support/customers.js'
 
@@ -21,5 +21,18 @@ describe('the local shop checkout', () => {
 
     await expect(store.orderMessage).toHaveText(expect.stringContaining(`confirmed for ${customer.email}`))
     await expect(store.checkoutForm).not.toBeDisplayed()
+
+    await browser.waitUntil(async () => {
+      const events = await browser.getCapturedNetworkEvents()
+      return events.some((event) => (
+        event.event === 'network.responseCompleted'
+        && event.method === 'POST'
+        && event.url?.includes('/api/orders')
+        && event.status === 201
+      ))
+    }, {
+      timeout: 5_000,
+      timeoutMsg: 'Expected the checkout order request to complete with HTTP 201',
+    })
   })
 })
