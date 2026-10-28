@@ -45,7 +45,7 @@ export function sanitizeUrl(value: string): string {
   try {
     const url = new URL(value)
     if (url.username || url.password) {
-      url.username = '[REDACTED]'
+      url.username = ''
       url.password = ''
     }
     for (const key of url.searchParams.keys()) {
