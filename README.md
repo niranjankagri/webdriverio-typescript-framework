@@ -40,17 +40,17 @@ artifacts/              # Generated run evidence (ignored by Git)
 
 The first runnable slice includes the local shop and a page-object checkout scenario.
 
-Start the demo app in one terminal:
+Install the pinned dependencies and run the end-to-end suite:
 
 ```sh
 npm ci
-npm run demo
-```
-
-Run the WebdriverIO suite in another terminal:
-
-```sh
 npm test
 ```
 
-Chrome is the default browser. Set `BROWSERS=chrome,firefox` to run the same scenario in both browsers. The demo listens on `127.0.0.1:4173`; if you change its port with `PORT`, set `BASE_URL` to the matching local URL for the test run.
+`npm test` starts the demo shop on an available local port, waits for its health endpoint, runs WebdriverIO, and stops the server. To run the shop by itself for manual browsing, use:
+
+```sh
+npm run demo
+```
+
+Chrome is the default browser. Set `BROWSERS=chrome,firefox` to run the same scenario in both browsers. Set `BASE_URL` to point the suite at an already-running demo or another compatible environment. For manual browsing, the demo listens on `127.0.0.1:4173`; `PORT` can change that port.
