@@ -9,11 +9,11 @@ describe('the local shop checkout', () => {
     await store.open()
   })
 
-  it('[smoke] displays the local shop', async () => {
+  it('[TC-101] [smoke] displays the local shop', async () => {
     await expect(store.heading).toHaveText('Useful things for a focused day.')
   })
 
-  it('[regression] confirms an order for the customer who placed it', async () => {
+  it('[TC-102] [regression] confirms an order for the customer who placed it', async () => {
     const customer = createTestCustomer()
 
     await expect(store.heading).toHaveText('Useful things for a focused day.')
