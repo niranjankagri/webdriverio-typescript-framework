@@ -1,0 +1,23 @@
+include = ["requirements.toml"]
+
+notice = "Requirements and test cases describe the local demo shop used by webdriverio-typescript-framework."
+
+[[test_case]]
+id = "TC-101"
+title = "Store page loads and presents the demo shop"
+automation_status = "automated"
+test_type = "ui"
+framework = "webdriverio"
+platforms = ["web"]
+requirements = ["SHOP-001"]
+automated_by = ["*::*[TC-101]*"]
+
+[[test_case]]
+id = "TC-102"
+title = "Customer completes checkout and receives confirmation"
+automation_status = "automated"
+test_type = "ui"
+framework = "webdriverio"
+platforms = ["web"]
+requirements = ["SHOP-002"]
+automated_by = ["*::*[TC-102]*"]
