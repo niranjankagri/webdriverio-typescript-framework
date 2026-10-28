@@ -43,7 +43,7 @@ The first runnable slice includes the local shop and a page-object checkout scen
 Start the demo app in one terminal:
 
 ```sh
-npm install
+npm ci
 npm run demo
 ```
 
