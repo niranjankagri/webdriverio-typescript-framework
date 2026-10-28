@@ -4,7 +4,17 @@ import { setTimeout as delay } from 'node:timers/promises'
 
 const projectDirectory = process.cwd()
 const cliPath = 'node_modules/@wdio/cli/bin/wdio.js'
-const testCategory = process.argv[2]
+const runnerArguments = process.argv.slice(2)
+const testCategory = runnerArguments.find((argument, index) => (
+  !argument.startsWith('--') && runnerArguments[index - 1] !== '--browsers'
+))
+const browserOption = runnerArguments.indexOf('--browsers')
+
+if (browserOption >= 0) {
+  const browsers = runnerArguments[browserOption + 1]
+  if (!browsers) throw new Error('Provide browsers after --browsers, for example chrome,firefox.')
+  process.env.BROWSERS = browsers
+}
 
 if (testCategory) {
   if (!['smoke', 'regression'].includes(testCategory)) {
