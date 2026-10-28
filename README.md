@@ -38,4 +38,19 @@ artifacts/              # Generated run evidence (ignored by Git)
 
 ## Development status
 
-The project is being built incrementally. Commands and browser prerequisites will be documented as each runnable slice lands.
+The first runnable slice includes the local shop and a page-object checkout scenario.
+
+Start the demo app in one terminal:
+
+```sh
+npm install
+npm run demo
+```
+
+Run the WebdriverIO suite in another terminal:
+
+```sh
+npm test
+```
+
+Chrome is the default browser. Set `BROWSERS=chrome,firefox` to run the same scenario in both browsers. The demo listens on `127.0.0.1:4173`; if you change its port with `PORT`, set `BASE_URL` to the matching local URL for the test run.

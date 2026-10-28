@@ -1,6 +1,7 @@
 {
   "name": "webdriverio-typescript-framework",
   "version": "0.1.0",
+  "type": "module",
   "private": false,
   "description": "A small, maintainable WebdriverIO + TypeScript UI automation showcase.",
   "license": "UNLICENSED",
