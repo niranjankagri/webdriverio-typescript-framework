@@ -17,7 +17,7 @@ export const config: WebdriverIO.Config = {
   maxInstances: 1,
   capabilities: browserNames.map((browserName) => ({ browserName })),
   logLevel: 'warn',
-  baseUrl: process.env.BASE_URL ?? 'http://127.0.0.1:4173',
+  baseUrl: process.env.BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? 4173}`,
   waitforTimeout: 5_000,
   framework: 'mocha',
   reporters: ['spec'],
