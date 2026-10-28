@@ -12,6 +12,8 @@
     "demo": "node --import tsx src/demo/server.ts",
     "typecheck": "tsc --noEmit",
     "test": "node ./scripts/run-tests.mjs",
+    "test:smoke": "node ./scripts/run-tests.mjs smoke",
+    "test:regression": "node ./scripts/run-tests.mjs regression",
     "test:unit": "node --import tsx --test ./test/support/diagnostics.test.ts",
     "test:wdio": "wdio run ./wdio.conf.ts"
   },

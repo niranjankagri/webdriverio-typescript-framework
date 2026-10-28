@@ -5,11 +5,17 @@ const requestedBrowsers = process.env.BROWSERS?.split(',').map((name) => name.tr
 const browserNames = requestedBrowsers?.length ? requestedBrowsers : ['chrome']
 const supportedBrowsers = new Set(['chrome', 'firefox'])
 const unsupportedBrowsers = browserNames.filter((name) => !supportedBrowsers.has(name))
+const testCategory = process.env.TEST_CATEGORY?.trim().toLowerCase()
+const supportedCategories = new Set(['smoke', 'regression'])
 const failureDiagnostics = new FailureDiagnostics()
 const diagnosticsBrowser = browser as unknown as DiagnosticsBrowser
 
 if (unsupportedBrowsers.length > 0) {
   throw new Error(`Unsupported browser(s): ${unsupportedBrowsers.join(', ')}. Choose chrome or firefox.`)
+}
+
+if (testCategory && !supportedCategories.has(testCategory)) {
+  throw new Error('Unsupported test category "' + testCategory + '". Choose smoke or regression.')
 }
 
 export const config: WebdriverIO.Config = {
@@ -25,6 +31,7 @@ export const config: WebdriverIO.Config = {
   mochaOpts: {
     ui: 'bdd',
     timeout: 30_000,
+    ...(testCategory ? { grep: new RegExp('\\[' + testCategory + '\\]', 'i') } : {}),
   },
   before: async () => failureDiagnostics.start(diagnosticsBrowser),
   beforeTest: () => failureDiagnostics.reset(),

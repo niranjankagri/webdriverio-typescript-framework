@@ -4,6 +4,14 @@ import { setTimeout as delay } from 'node:timers/promises'
 
 const projectDirectory = process.cwd()
 const cliPath = 'node_modules/@wdio/cli/bin/wdio.js'
+const testCategory = process.argv[2]
+
+if (testCategory) {
+  if (!['smoke', 'regression'].includes(testCategory)) {
+    throw new Error('Unsupported test category "' + testCategory + '". Choose smoke or regression.')
+  }
+  process.env.TEST_CATEGORY = testCategory
+}
 
 function findAvailablePort() {
   return new Promise((resolvePort, rejectPort) => {
