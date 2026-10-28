@@ -1,0 +1,17 @@
+[[requirement]]
+id = "SHOP-001"
+title = "Customers can open the demo shop and view its product catalogue"
+feature = "Demo shop / Browse"
+criticality = "medium"
+priority = "p2"
+risk = "low"
+platforms = ["web"]
+
+[[requirement]]
+id = "SHOP-002"
+title = "Customers can submit a valid order and see its confirmation"
+feature = "Demo shop / Checkout"
+criticality = "high"
+priority = "p1"
+risk = "medium"
+platforms = ["web"]
