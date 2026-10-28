@@ -10,6 +10,7 @@ const supportedBrowsers = new Set(['chrome', 'firefox'])
 const unsupportedBrowsers = browserNames.filter((name) => !supportedBrowsers.has(name))
 const testCategory = process.env.TEST_CATEGORY?.trim().toLowerCase()
 const headless = ['1', 'true'].includes(process.env.HEADLESS?.trim().toLowerCase() ?? '')
+const chromeNoSandbox = headless && ['1', 'true'].includes(process.env.CHROME_NO_SANDBOX?.trim().toLowerCase() ?? '')
 const supportedCategories = new Set(['smoke', 'regression'])
 const failureDiagnostics = new FailureDiagnostics()
 const diagnosticsBrowser = browser as unknown as DiagnosticsBrowser
@@ -29,7 +30,10 @@ export const config: WebdriverIO.Config = {
   capabilities: browserNames.map((browserName) => {
     if (!headless) return { browserName }
     if (browserName === 'chrome') {
-      return { browserName, 'goog:chromeOptions': { args: ['--headless=new'] } }
+      return {
+        browserName,
+        'goog:chromeOptions': { args: ['--headless=new', ...(chromeNoSandbox ? ['--no-sandbox'] : [])] },
+      }
     }
     return { browserName, 'moz:firefoxOptions': { args: ['-headless'] } }
   }),
