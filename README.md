@@ -55,6 +55,8 @@ npm run demo
 
 Run only the fast store-page check with `npm run test:smoke`, or run the full checkout journey with `npm run test:regression`. `npm test` runs both categories.
 
+Run the complete suite in Chrome and Firefox with `npm run test:cross-browser`; both browsers must be installed locally. You can also combine a category and browser list, for example `node ./scripts/run-tests.mjs smoke --browsers chrome,firefox`.
+
 Each WebdriverIO run writes a JUnit XML report per browser under `artifacts/test-results/`. The report is suitable for test dashboards and is ignored by Git along with failure evidence.
 
 ### Quality Intelligence
