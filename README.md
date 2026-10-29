@@ -30,6 +30,8 @@ A portfolio-ready browser automation framework built with WebdriverIO, TypeScrip
 | API helper | `test/support/shop-api.ts` | Reads a stored order through the API to check what the page confirmed |
 | Failure diagnostics | `test/support/failure-diagnostics.ts`, `wdio.conf.ts` | Screenshot and sanitized `run.json` for every failing test, attached to Allure |
 
+**[Architecture overview](docs/architecture.md):** a diagram of the layers (runner, WebdriverIO hooks, specs, page and components, test data and helpers, demo shop, artifacts) and one test, TC-107, annotated line by line to show page objects, test data, the API helper and the automatic failure diagnostics working together.
+
 ## Test cases
 
 | ID | Test | Tag |
@@ -69,22 +71,47 @@ npm run test:headless       # Chrome in headless mode
 npm run test:cross-browser  # Chrome and Firefox
 npm run test:api            # Demo shop HTTP routes; no browser or Maven required
 npm run typecheck           # TypeScript validation
-npm run test:unit           # Diagnostic sanitization and JUnit merge checks
+npm run test:unit           # Diagnostic sanitization, JUnit merge and summary checks
+npm run test:failure-demo   # One test that fails on purpose, to see the failure evidence
 ```
 
-To combine a category and browser list, use:
+### Chrome and Firefox on your machine
 
-```sh
-node ./scripts/run-tests.mjs smoke --browsers chrome,firefox
-```
+WebdriverIO uses the browsers installed on the machine and downloads the matching driver (chromedriver, geckodriver) by itself on the first run; nothing else needs installing.
 
-For restricted local environments where headless Chrome cannot create sandboxed processes, set `CHROME_NO_SANDBOX=true`. This option disables Chrome’s sandbox and is intended only for trusted local test content.
+| Goal | Command |
+|---|---|
+| Chrome, with a visible window (default) | `npm test` |
+| Chrome, headless | `npm run test:headless` |
+| Firefox only | `node ./scripts/run-tests.mjs --browsers firefox` (add `--headless` for no window) |
+| Both, one after the other | `npm run test:cross-browser` |
+| A category in both | `node ./scripts/run-tests.mjs smoke --browsers chrome,firefox` |
+| The same as CI | `npm run test:headless -- --browsers chrome` and `... --browsers firefox` |
+
+- Firefox must be installed for the Firefox runs (`winget install Mozilla.Firefox`, `brew install --cask firefox`, or the distribution's package). A missing browser fails at session start with "unable to find binary"; the Chrome runs are unaffected.
+- Each browser gets its own JUnit file: `artifacts/test-results/results-chrome.xml`, `results-firefox.xml`.
+- For restricted local environments where headless Chrome cannot create sandboxed processes, set `CHROME_NO_SANDBOX=true`. This option disables Chrome’s sandbox and is intended only for trusted local test content.
+
+### When a test fails
+
+`npm run test:failure-demo` runs one test that expects a message the shop never shows, so you can see all of this without breaking anything. A failed run leaves:
+
+| Where | What |
+|---|---|
+| Terminal | The assertion (`Expected: "Thank you, your parcel is on its way!"` / `Received: "Order 388C4099 confirmed for …"`) and the line `Failure evidence saved to artifacts/failures/<time>-<test>-<browser>` |
+| `artifacts/failures/<time>-<test>-<browser>/screenshot.png` | The page at the moment of the failure |
+| `artifacts/failures/…/run.json` | Test, browser and version, page URL, the error, and summaries of console messages and network requests (method, URL, status); e-mail addresses and credentials redacted, no bodies, headers or cookies |
+| `artifacts/test-results/results-<browser>.xml` | The JUnit failure with its message, for CI tools and Quality Intelligence |
+| `artifacts/allure-results/` | The same test in Allure, with the screenshot and `run.json` attached |
+| CI | A summary on the job page (totals, and each failure's expected vs. received) and the artifacts `junit-<browser>` and `evidence-<browser>` (Allure results, screenshots and `run.json`) |
+
+`node scripts/junit-summary.mjs` prints the same summary locally.
 
 To run the demo shop manually, use `npm run demo`. It listens on `127.0.0.1:4173` by default; set `PORT` to change the port. Set `BASE_URL` to run WebdriverIO against an already-running compatible shop.
 
 ## API contracts
 
-The optional Karate suite checks catalog responses, order creation and readback, and invalid-order handling. Start the demo shop in one terminal, then run the API suite in another:
+The optional Karate suite checks catalog responses, order creation and readback, invalid-order handling, and that an oversized order is refused with 413 Payload Too Large. Start the demo shop in one terminal, then run the API suite in another:
 
 ```sh
 npm run demo
@@ -123,7 +150,7 @@ GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and push 
 |---|---|
 | Typecheck, unit and API tests | `tsc --noEmit`, the unit tests (diagnostics, JUnit merge) and the demo-shop API tests |
 | Karate API contracts | Starts the demo shop and runs the Karate suite (report kept as an artifact) |
-| Browser tests (chrome, firefox) | `npm run test:headless -- --browsers <browser>`; JUnit XML, Allure results and failure evidence are kept as artifacts |
+| Browser tests (chrome, firefox) | `npm run test:headless -- --browsers <browser>`; a test summary on the job page; artifacts `junit-<browser>` and `evidence-<browser>` (Allure results, failure screenshots and `run.json`) |
 
 Dependabot proposes npm, Maven and GitHub Actions updates once a month (`.github/dependabot.yml`).
 
@@ -142,13 +169,14 @@ qi dashboard --catalog /path/to/webdriverio-typescript-framework/quality/catalog
 ```text
 api-tests/karate/       Optional API contract suite
 quality/                Test-to-requirement catalog
-scripts/                Local WebdriverIO runner and the JUnit merge
+scripts/                Local WebdriverIO runner, JUnit merge and summary
 src/demo/               Demo shop and static assets
 test/pages/             Page object
 test/components/        Component objects: product list, bag, checkout form
 test/specs/             End-to-end scenarios: catalog, cart, checkout
 test/support/           Test data, browser checks, API helper, failure diagnostics
+test/failure-demo/      A test that fails on purpose (npm run test:failure-demo; not in CI)
 test/scripts/           Unit tests for the scripts
-docs/images/            README screenshots
+docs/                   Architecture overview, README screenshots
 artifacts/              Generated reports and failure evidence
 ```

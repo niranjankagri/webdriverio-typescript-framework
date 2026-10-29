@@ -18,9 +18,10 @@
     "test:headless": "node ./scripts/run-tests.mjs --headless",
     "test:karate": "mvn -f api-tests/karate/pom.xml test",
     "test:api": "node --import tsx --test ./test/demo/server.test.ts",
-    "test:unit": "node --import tsx --test ./test/support/diagnostics.test.ts ./test/scripts/merge-junit.test.ts",
+    "test:unit": "node --import tsx --test ./test/support/diagnostics.test.ts ./test/scripts/merge-junit.test.ts ./test/scripts/junit-summary.test.ts",
     "test:mutation": "stryker run",
-    "test:wdio": "wdio run ./wdio.conf.ts"
+    "test:wdio": "wdio run ./wdio.conf.ts",
+    "test:failure-demo": "node ./scripts/run-tests.mjs --headless --spec ./test/failure-demo/evidence.e2e.ts"
   },
   "devDependencies": {
     "@stryker-mutator/core": "^10.1.1",

@@ -9,9 +9,17 @@ const resultsDirectory = 'artifacts/test-results'
 const runnerArguments = process.argv.slice(2)
 const headlessOption = runnerArguments.indexOf('--headless')
 const testCategory = runnerArguments.find((argument, index) => (
-  !argument.startsWith('--') && runnerArguments[index - 1] !== '--browsers'
+  !argument.startsWith('--') && !['--browsers', '--spec'].includes(runnerArguments[index - 1])
 ))
 const browserOption = runnerArguments.indexOf('--browsers')
+const specOption = runnerArguments.indexOf('--spec')
+
+// --spec <file> runs one spec file instead of test/specs (used by npm run test:failure-demo).
+if (specOption >= 0) {
+  const spec = runnerArguments[specOption + 1]
+  if (!spec) throw new Error('Provide a spec file after --spec.')
+  process.env.WDIO_SPECS = spec
+}
 
 if (browserOption >= 0) {
   const browsers = runnerArguments[browserOption + 1]
