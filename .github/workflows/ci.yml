@@ -90,6 +90,11 @@ jobs:
       # run-tests.mjs starts the demo shop on a free port, runs WebdriverIO, and stops the shop again.
       - run: npm run test:headless -- --browsers ${{ matrix.browser }}
 
+      # A readable report on the job page: totals and, for each failure, expected vs. received.
+      - name: Write the test summary
+        if: ${{ !cancelled() }}
+        run: node scripts/junit-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+
       # Upload even when tests failed: that is exactly when the reports are needed.
       # JUnit XML as its own artifact: the CI results collection of
       # automation-coverage-quality-intelligence can import it.
@@ -101,11 +106,11 @@ jobs:
           path: artifacts/test-results/*.xml
           if-no-files-found: warn
           retention-days: 30
-      - name: Keep the Allure results and failure diagnostics
+      - name: Keep the evidence (Allure results, failure screenshots and run.json)
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
-          name: allure-results-${{ matrix.browser }}
+          name: evidence-${{ matrix.browser }}
           path: |
             artifacts/allure-results
             artifacts/failures

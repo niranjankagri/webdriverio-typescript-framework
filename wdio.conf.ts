@@ -25,7 +25,8 @@ if (testCategory && !supportedCategories.has(testCategory)) {
 
 export const config: WebdriverIO.Config = {
   runner: 'local',
-  specs: ['./test/specs/**/*.e2e.ts'],
+  // WDIO_SPECS runs other spec files instead, e.g. the failure demo (npm run test:failure-demo).
+  specs: process.env.WDIO_SPECS ? [process.env.WDIO_SPECS] : ['./test/specs/**/*.e2e.ts'],
   maxInstances: 1,
   capabilities: browserNames.map((browserName) => {
     if (!headless) return { browserName }
