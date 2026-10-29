@@ -1,84 +1,106 @@
-# WebdriverIO + TypeScript Framework
+# WebdriverIO + TypeScript Automation Framework
 
-A small, production-minded browser automation project built to make the code easy to review.
+A portfolio-ready browser automation framework built with WebdriverIO, TypeScript, and a local demo shop. It demonstrates maintainable page objects, isolated test data, cross-browser execution, useful failure diagnostics, and API contract checks.
 
-## First slice
+## What’s included
 
-- A local demo shop with deterministic product data.
-- WebdriverIO's local runner with Mocha and TypeScript.
-- One customer journey, implemented with page objects and isolated test data.
-- Useful failure evidence and browser/network diagnostics as the project grows.
+- A deterministic demo shop with product and order APIs.
+- Smoke and checkout regression scenarios written with Mocha and page objects.
+- Chrome and Firefox support, including headless runs.
+- JUnit and Allure reports, with sanitized failure details and screenshots when available.
+- Optional Karate API contracts and Stryker mutation testing for diagnostic redaction.
+- A quality catalog that maps test cases to requirements for Quality Intelligence imports.
 
-There is intentionally no CI workflow in this repository yet. The framework is being built and reviewed in small commits before automation is added.
-
-## Design principles
-
-- Keep selectors and page actions in page objects; keep business intent in specs.
-- Give each test its own data so order and browser choice do not affect the result.
-- Prefer explicit waits and observable application behavior over fixed sleeps.
-- Capture evidence when a test fails, and make it clear which browser produced it.
-- Keep the demo app local and dependency-light so the suite is reproducible.
-
-## Planned layout
-
-```text
-src/
-  demo/                 # Local demo shop
-  pages/                # Page objects
-  support/              # Test data and diagnostic helpers
-test/specs/             # End-to-end scenarios
-artifacts/              # Generated run evidence (ignored by Git)
-```
+There is intentionally no CI workflow in this repository yet. The project is developed and reviewed in small changes before automation is added.
 
 ## Requirements
 
-- Node.js 22.19 or newer
-- npm
-- Chrome and Firefox for the planned cross-browser run
+- Node.js 22.19 or newer and npm.
+- Chrome for the default test run; Firefox is also required for cross-browser runs.
+- Java 17 and Maven only if you want to run the optional Karate suite.
 
-## Development status
+## Run the browser tests
 
-The first runnable slice includes the local shop and a page-object checkout scenario.
-
-Install the pinned dependencies and run the end-to-end suite:
+Install dependencies and run the complete WebdriverIO suite:
 
 ```sh
 npm ci
 npm test
 ```
 
-`npm test` starts the demo shop on an available local port, waits for its health endpoint, runs WebdriverIO, and stops the server. Run the focused diagnostics checks with `npm run test:unit`. To run the shop by itself for manual browsing, use:
+The test runner starts the demo shop on an available local port, waits for its health endpoint, runs the tests, and stops the server. The default run uses Chrome.
+
+```sh
+npm run test:smoke          # Fast page-load check
+npm run test:regression     # Checkout journey
+npm run test:headless       # Chrome in headless mode
+npm run test:cross-browser  # Chrome and Firefox
+npm run typecheck           # TypeScript validation
+npm run test:unit           # Diagnostic sanitization checks
+```
+
+To combine a category and browser list, use:
+
+```sh
+node ./scripts/run-tests.mjs smoke --browsers chrome,firefox
+```
+
+For restricted local environments where headless Chrome cannot create sandboxed processes, set `CHROME_NO_SANDBOX=true`. This option disables Chrome’s sandbox and is intended only for trusted local test content.
+
+To run the demo shop manually, use `npm run demo`. It listens on `127.0.0.1:4173` by default; set `PORT` to change the port. Set `BASE_URL` to run WebdriverIO against an already-running compatible shop.
+
+## API contracts
+
+The optional Karate suite checks catalog responses, order creation and readback, and invalid-order handling. Start the demo shop in one terminal, then run the API suite in another:
 
 ```sh
 npm run demo
+npm run test:karate
 ```
 
-Run only the fast store-page check with `npm run test:smoke`, or run the full checkout journey with `npm run test:regression`. `npm test` runs both categories.
+The suite defaults to `http://127.0.0.1:4173`; set `BASE_URL` to target another compatible service. Karate writes its HTML report under `api-tests/karate/target/karate-reports/`.
 
-Measure how well the diagnostic sanitization checks catch regressions with `npm run test:mutation`. Stryker mutates only `test/support/diagnostics.ts`, fails the run below a 75% mutation score, and writes its HTML and JSON reports under `artifacts/mutation/`.
+## Reports and diagnostics
 
-The optional Karate API contract suite lives under `api-tests/karate/`. Start the demo shop with `npm run demo`, then run `npm run test:karate` in another terminal. It uses Java 17 and Maven, writes its HTML report under `api-tests/karate/target/karate-reports/`, and reads `BASE_URL` when you want to target another compatible shop instance.
+Each WebdriverIO run writes one JUnit XML file per browser under `artifacts/test-results/` and Allure result files under `artifacts/allure-results/`. Allure results include stable test IDs and browser and Node.js metadata. If a test fails, the framework attempts to save a screenshot and a sanitized `run.json` under `artifacts/failures/`.
 
-Run the complete suite in Chrome and Firefox with `npm run test:cross-browser`; both browsers must be installed locally. You can also combine a category and browser list, for example `node ./scripts/run-tests.mjs smoke --browsers chrome,firefox`.
+The failure manifest can include the test name, browser and version, page URL, error, and summaries of browser-console and network events. It omits request and response bodies, headers, and cookies; common credential fields and email addresses are redacted. The manifest also records when WebDriver BiDi log or network capture is unavailable.
 
-Run Chrome without opening a browser window with `npm run test:headless`. Add `--browsers chrome,firefox` to the command to run both browsers headlessly. Headless mode can also be enabled for a direct WebdriverIO run with `HEADLESS=true`.
-
-In a restricted local environment where Chrome cannot start its sandboxed processes, set `CHROME_NO_SANDBOX=true` before running the headless suite. This disables Chrome's sandbox and should only be used for trusted local test content.
-
-Each WebdriverIO run writes a JUnit XML report per browser under `artifacts/test-results/` and Allure result files under `artifacts/allure-results/`. Allure results include stable test IDs, browser and Node.js version metadata, and sanitized failure diagnostics with a screenshot attachment when capture succeeds. Both output directories are ignored by Git along with failure evidence. If the Allure CLI is installed, generate a browsable report with `allure generate artifacts/allure-results --clean -o artifacts/allure-report`.
-
-### Quality Intelligence
-
-The optional `quality/catalog.toml` maps the smoke and checkout tests to stable test IDs and demo-shop requirements. To add a local run to [Automation Coverage & Quality Intelligence](https://github.com/niranjankagri/automation-coverage-quality-intelligence), run these commands from its checkout, replacing `/path/to/webdriverio-typescript-framework` with this repository's path:
+If the Allure CLI is installed, generate a browsable report with:
 
 ```sh
-qi history import /path/to/webdriverio-typescript-framework/artifacts/test-results \\
+allure generate artifacts/allure-results --clean -o artifacts/allure-report
+```
+
+## Mutation checks
+
+Run Stryker against the diagnostic sanitizers:
+
+```sh
+npm run test:mutation
+```
+
+The run requires a 75% minimum mutation score and writes HTML and JSON reports under `artifacts/mutation/`.
+
+## Quality Intelligence
+
+`quality/catalog.toml` maps smoke and checkout tests to stable IDs and demo-shop requirements. To import a local run into [Automation Coverage & Quality Intelligence](https://github.com/niranjankagri/automation-coverage-quality-intelligence), run these commands from that repository. Replace `/path/to/webdriverio-typescript-framework` with this checkout’s path:
+
+```sh
+qi history import /path/to/webdriverio-typescript-framework/artifacts/test-results \
   --catalog /path/to/webdriverio-typescript-framework/quality/catalog.toml
 qi dashboard --catalog /path/to/webdriverio-typescript-framework/quality/catalog.toml
 ```
 
-Chrome is the default browser. Set `BROWSERS=chrome,firefox` to run the same scenario in both browsers. Set `BASE_URL` to point the suite at an already-running demo or another compatible environment. For manual browsing, the demo listens on `127.0.0.1:4173`; `PORT` can change that port.
+## Project layout
 
-## Failure evidence
-
-Failed WebdriverIO tests write a screenshot and `run.json` under `artifacts/failures/`. The manifest records the test, browser and version, current page URL, error, and up to 250 browser-console and network event summaries. Network summaries keep method, sanitized URL, response status, and fetch errors; they omit request and response bodies, headers, and cookies. Common credential fields and email addresses are redacted before the manifest is written. The manifest reports when WebDriver BiDi log or network capture is unavailable.
+```text
+api-tests/karate/       Optional API contract suite
+quality/                Test-to-requirement catalog
+scripts/                Local WebdriverIO runner
+src/demo/               Demo shop and static assets
+test/pages/              Page objects
+test/specs/              End-to-end scenarios
+test/support/            Test data and failure diagnostics
+artifacts/               Generated reports and failure evidence
+```
