@@ -1,5 +1,7 @@
 # WebdriverIO + TypeScript Automation Framework
 
+[![CI](https://github.com/niranjankagri/webdriverio-typescript-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/niranjankagri/webdriverio-typescript-framework/actions/workflows/ci.yml)
+
 A portfolio-ready browser automation framework built with WebdriverIO, TypeScript, and a local demo shop. It demonstrates maintainable page objects, isolated test data, cross-browser execution, useful failure diagnostics, and API contract checks.
 
 ## What’s included
@@ -83,6 +85,18 @@ npm run test:mutation
 ```
 
 The run requires a 75% minimum mutation score and writes HTML and JSON reports under `artifacts/mutation/`.
+
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and push to `main`, by hand, and every Monday night:
+
+| Job | What it runs |
+|---|---|
+| Typecheck, unit and API tests | `tsc --noEmit`, the diagnostics unit tests and the demo-shop API tests |
+| Karate API contracts | Starts the demo shop and runs the Karate suite (report kept as an artifact) |
+| Browser tests (chrome, firefox) | `npm run test:headless -- --browsers <browser>`; JUnit XML, Allure results and failure evidence are kept as artifacts |
+
+Dependabot proposes npm, Maven and GitHub Actions updates once a month (`.github/dependabot.yml`).
 
 ## Quality Intelligence
 
