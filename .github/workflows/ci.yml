@@ -1,0 +1,113 @@
+# Continuous integration: fast checks first (types, unit and API tests), then the Karate API
+# contracts and the browser tests in parallel. Every job keeps its reports, also when it fails.
+#
+# Runs on every push and pull request to main, by hand (Actions tab -> Run workflow), and every
+# Monday night, so a broken browser, driver or dependency shows up even in weeks without commits.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '30 22 * * 1' # Mondays 22:30 UTC
+
+# A newer push to the same branch cancels the run that is still going.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Typecheck, unit and API tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm # reuses downloaded packages between runs (keyed on package-lock.json)
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run test:unit
+      - run: npm run test:api
+
+  karate:
+    name: Karate API contracts
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - run: npm ci
+      # The suite checks the running demo shop, so start it in the background and wait for /api/health.
+      - name: Start the demo shop
+        run: |
+          npm run demo > demo-server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:4173/api/health && exit 0; sleep 1; done
+          cat demo-server.log; exit 1
+      - run: npm run test:karate
+      - name: Upload the Karate report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: karate-report
+          path: api-tests/karate/target/karate-reports
+          if-no-files-found: warn
+          retention-days: 14
+
+  browser-tests:
+    name: Browser tests (${{ matrix.browser }})
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false # one browser failing should not cancel the other
+      matrix:
+        browser: [chrome, firefox] # both are preinstalled on the runner; WebdriverIO fetches the driver
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # run-tests.mjs starts the demo shop on a free port, runs WebdriverIO, and stops the shop again.
+      - run: npm run test:headless -- --browsers ${{ matrix.browser }}
+
+      # Upload even when tests failed: that is exactly when the reports are needed.
+      # JUnit XML as its own artifact: the CI results collection of
+      # automation-coverage-quality-intelligence can import it.
+      - name: Keep the JUnit results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: junit-${{ matrix.browser }}
+          path: artifacts/test-results/*.xml
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Keep the Allure results and failure diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: allure-results-${{ matrix.browser }}
+          path: |
+            artifacts/allure-results
+            artifacts/failures
+          if-no-files-found: ignore
+          retention-days: 14
