@@ -31,3 +31,12 @@ Scenario: reject an invalid product and email
   When method post
   Then status 422
   And match response.error == 'Enter a valid product, name, and email address.'
+
+Scenario: refuse an oversized order with 413 Payload Too Large
+  # 10 000 bytes is the API's limit; a 12 000-character name puts the body over it.
+  * def longName = karate.repeat(12000, function(){ return 'x' }).join('')
+  Given path 'api', 'orders'
+  And request { productId: 'field-notebook', customerName: '#(longName)', email: 'qa+karate@example.test' }
+  When method post
+  Then status 413
+  And match response.error == 'Request body is too large (limit 10000 bytes).'

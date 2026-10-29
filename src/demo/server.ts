@@ -25,35 +25,63 @@ const contentTypes: Record<string, string> = {
   '.js': 'text/javascript; charset=utf-8',
 }
 
-function sendJson(response: ServerResponse, statusCode: number, body: unknown): void {
+/** The largest request body the API reads. An order is about 150 bytes, so 10 kB leaves plenty of room. */
+export const MAX_BODY_BYTES = 10_000
+
+/** A request body the API refuses, with the HTTP status that says why (400 invalid JSON, 413 too large). */
+class RequestBodyError extends Error {
+  constructor(readonly statusCode: 400 | 413, message: string) {
+    super(message)
+  }
+}
+
+function sendJson(response: ServerResponse, statusCode: number, body: unknown, extraHeaders: Record<string, string> = {}): void {
   response.writeHead(statusCode, {
     'content-type': 'application/json; charset=utf-8',
     'cache-control': 'no-store',
     'x-content-type-options': 'nosniff',
+    ...extraHeaders,
   })
   response.end(JSON.stringify(body))
 }
 
+/**
+ * Reads and parses a JSON body of at most MAX_BODY_BYTES.
+ * A body that is too large is refused with 413 Payload Too Large: straight away when the
+ * Content-Length header announces it, otherwise as soon as the bytes read pass the limit.
+ * The rest of an oversized body is not stored (the connection is closed after the answer).
+ */
 function readJson(request: IncomingMessage): Promise<unknown> {
   return new Promise((resolveBody, rejectBody) => {
+    const tooLarge = () => new RequestBodyError(413, `Request body is too large (limit ${MAX_BODY_BYTES} bytes).`)
+    const announced = Number(request.headers['content-length'])
+    if (Number.isFinite(announced) && announced > MAX_BODY_BYTES) {
+      rejectBody(tooLarge())
+      return
+    }
+
     const chunks: Buffer[] = []
     let size = 0
+    let refused = false
 
     request.on('data', (chunk: Buffer) => {
+      if (refused) return // keep draining without storing, so the 413 answer can still be sent
       size += chunk.length
-      if (size > 10_000) {
-        rejectBody(new Error('Request body is too large.'))
-        request.destroy()
+      if (size > MAX_BODY_BYTES) {
+        refused = true
+        chunks.length = 0
+        rejectBody(tooLarge())
         return
       }
       chunks.push(chunk)
     })
 
     request.on('end', () => {
+      if (refused) return
       try {
         resolveBody(JSON.parse(Buffer.concat(chunks).toString('utf8')) as unknown)
       } catch {
-        rejectBody(new Error('Request body must be valid JSON.'))
+        rejectBody(new RequestBodyError(400, 'Request body must be valid JSON.'))
       }
     })
 
@@ -110,6 +138,11 @@ export function createDemoServer() {
       try {
         body = await readJson(request)
       } catch (error) {
+        if (error instanceof RequestBodyError && error.statusCode === 413) {
+          // Close the connection after the answer: the client may still be sending the rest of the body.
+          sendJson(response, 413, { error: error.message }, { connection: 'close' })
+          return
+        }
         sendJson(response, 400, { error: error instanceof Error ? error.message : 'Invalid request.' })
         return
       }
