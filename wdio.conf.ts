@@ -67,7 +67,8 @@ export const config: WebdriverIO.Config = {
   before: async () => failureDiagnostics.start(diagnosticsBrowser),
   beforeTest: async (_test) => {
     failureDiagnostics.reset()
-    await addFeature('Local shop checkout')
+    // The spec's describe() title ("the bag", "the product catalogue" ...) groups tests in Allure.
+    await addFeature(_test.parent || 'Demo shop')
     const testId = /\[(TC-\d+)\]/i.exec(_test.title)?.[1]
     if (testId) await addTestId(testId)
   },

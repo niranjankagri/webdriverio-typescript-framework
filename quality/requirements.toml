@@ -15,3 +15,30 @@ criticality = "high"
 priority = "p1"
 risk = "medium"
 platforms = ["web"]
+
+[[requirement]]
+id = "SHOP-003"
+title = "Customers can build a bag with correct lines, item count and total"
+feature = "Demo shop / Bag"
+criticality = "high"
+priority = "p1"
+risk = "medium"
+platforms = ["web"]
+
+[[requirement]]
+id = "SHOP-004"
+title = "Invalid orders are rejected with a clear message and are not stored"
+feature = "Demo shop / Checkout"
+criticality = "high"
+priority = "p1"
+risk = "high"
+platforms = ["web"]
+
+[[requirement]]
+id = "SHOP-005"
+title = "The shop tells customers when the catalogue cannot be loaded"
+feature = "Demo shop / Browse"
+criticality = "medium"
+priority = "p2"
+risk = "medium"
+platforms = ["web"]

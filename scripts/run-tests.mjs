@@ -1,9 +1,11 @@
 import { spawn } from 'node:child_process'
 import { createServer } from 'node:net'
 import { setTimeout as delay } from 'node:timers/promises'
+import { clearJUnitFiles, mergeJUnitFiles } from './merge-junit.mjs'
 
 const projectDirectory = process.cwd()
 const cliPath = 'node_modules/@wdio/cli/bin/wdio.js'
+const resultsDirectory = 'artifacts/test-results'
 const runnerArguments = process.argv.slice(2)
 const headlessOption = runnerArguments.indexOf('--headless')
 const testCategory = runnerArguments.find((argument, index) => (
@@ -115,10 +117,13 @@ try {
     await waitForHealth(demoServer, baseUrl)
   }
 
+  await clearJUnitFiles(resultsDirectory)
   process.exitCode = await runWebdriverIO(baseUrl)
 } catch (error) {
   console.error(error instanceof Error ? error.message : error)
   process.exitCode = 1
 } finally {
   if (demoServer) await stopDemoServer(demoServer)
+  // One JUnit file per browser and run, also after failures (that is when the results matter most).
+  for (const file of await mergeJUnitFiles(resultsDirectory)) console.info(`JUnit results: ${file}`)
 }

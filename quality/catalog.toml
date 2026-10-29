@@ -10,7 +10,7 @@ test_type = "ui"
 framework = "webdriverio"
 platforms = ["web"]
 requirements = ["SHOP-001"]
-automated_by = ["*::*[TC-101]*"]
+automated_by = ["*::TC 101 *"]
 
 [[test_case]]
 id = "TC-102"
@@ -20,4 +20,84 @@ test_type = "ui"
 framework = "webdriverio"
 platforms = ["web"]
 requirements = ["SHOP-002"]
-automated_by = ["*::*[TC-102]*"]
+automated_by = ["*::TC 102 *"]
+
+[[test_case]]
+id = "TC-103"
+title = "Catalogue lists every product with its price"
+automation_status = "automated"
+test_type = "ui"
+framework = "webdriverio"
+platforms = ["web"]
+requirements = ["SHOP-001"]
+automated_by = ["*::TC 103 *"]
+
+[[test_case]]
+id = "TC-104"
+title = "Bag adds up lines, item count and total for several products"
+automation_status = "automated"
+test_type = "ui"
+framework = "webdriverio"
+platforms = ["web"]
+requirements = ["SHOP-003"]
+automated_by = ["*::TC 104 *"]
+
+[[test_case]]
+id = "TC-105"
+title = "Bag starts empty without checkout form or total"
+automation_status = "automated"
+test_type = "ui"
+framework = "webdriverio"
+platforms = ["web"]
+requirements = ["SHOP-003"]
+automated_by = ["*::TC 105 *"]
+
+[[test_case]]
+id = "TC-106"
+title = "One-item-per-order rule is explained and no order is sent"
+automation_status = "automated"
+test_type = "ui"
+framework = "webdriverio"
+platforms = ["web"]
+requirements = ["SHOP-004"]
+automated_by = ["*::TC 106 *"]
+
+[[test_case]]
+id = "TC-107"
+title = "Confirmed order is stored on the server"
+automation_status = "automated"
+test_type = "ui"
+framework = "webdriverio"
+platforms = ["web"]
+requirements = ["SHOP-002"]
+automated_by = ["*::TC 107 *"]
+
+[[test_case]]
+id = "TC-108"
+title = "Catalogue failure is reported to the customer"
+automation_status = "automated"
+test_type = "ui"
+framework = "webdriverio"
+platforms = ["web"]
+requirements = ["SHOP-005"]
+automated_by = ["*::TC 108 *"]
+
+[[test_case]]
+id = "TC-109"
+title = "Server rejection of an order is shown with its reason"
+automation_status = "automated"
+test_type = "ui"
+framework = "webdriverio"
+platforms = ["web"]
+requirements = ["SHOP-004"]
+automated_by = ["*::TC 109 *"]
+
+[[test_case]]
+id = "TC-110"
+title = "Order rejected by browser form validation is not sent"
+automation_status = "automated"
+test_type = "ui"
+framework = "webdriverio"
+platforms = ["web"]
+requirements = ["SHOP-004"]
+automated_by = ["*::TC 110 *"]
