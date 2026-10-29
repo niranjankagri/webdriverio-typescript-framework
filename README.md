@@ -7,6 +7,7 @@ A portfolio-ready browser automation framework built with WebdriverIO, TypeScrip
 - A deterministic demo shop with product and order APIs.
 - Smoke and checkout regression scenarios written with Mocha and page objects.
 - Chrome and Firefox support, including headless runs.
+- Fast HTTP route tests using Node’s built-in test runner.
 - JUnit and Allure reports, with sanitized failure details and screenshots when available.
 - Optional Karate API contracts and Stryker mutation testing for diagnostic redaction.
 - A quality catalog that maps test cases to requirements for Quality Intelligence imports.
@@ -35,6 +36,7 @@ npm run test:smoke          # Fast page-load check
 npm run test:regression     # Checkout journey
 npm run test:headless       # Chrome in headless mode
 npm run test:cross-browser  # Chrome and Firefox
+npm run test:api            # Demo shop HTTP routes; no browser or Maven required
 npm run typecheck           # TypeScript validation
 npm run test:unit           # Diagnostic sanitization checks
 ```

@@ -17,6 +17,7 @@
     "test:cross-browser": "node ./scripts/run-tests.mjs --browsers chrome,firefox",
     "test:headless": "node ./scripts/run-tests.mjs --headless",
     "test:karate": "mvn -f api-tests/karate/pom.xml test",
+    "test:api": "node --import tsx --test ./test/demo/server.test.ts",
     "test:unit": "node --import tsx --test ./test/support/diagnostics.test.ts",
     "test:mutation": "stryker run",
     "test:wdio": "wdio run ./wdio.conf.ts"

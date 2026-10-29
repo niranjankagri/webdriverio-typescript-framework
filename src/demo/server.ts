@@ -160,12 +160,14 @@ export function createDemoServer() {
   })
 }
 
-const port = Number(process.env.PORT ?? 4173)
-const server = createDemoServer()
-server.listen(port, '127.0.0.1', () => {
-  console.log(`Demo shop listening at http://127.0.0.1:${port}`)
-})
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const port = Number(process.env.PORT ?? 4173)
+  const server = createDemoServer()
+  server.listen(port, '127.0.0.1', () => {
+    console.log(`Demo shop listening at http://127.0.0.1:${port}`)
+  })
 
-for (const signal of ['SIGINT', 'SIGTERM'] as const) {
-  process.on(signal, () => server.close(() => process.exit(0)))
+  for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+    process.on(signal, () => server.close(() => process.exit(0)))
+  }
 }
