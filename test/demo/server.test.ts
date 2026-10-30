@@ -24,7 +24,7 @@ after(async () => {
   })
 })
 
-test('health endpoint reports a healthy service without caching', async () => {
+test('[TC-201] health endpoint reports a healthy service without caching', async () => {
   const response = await fetch(`${baseUrl}/api/health`)
   const payload = await response.json() as { status: string; orderCount: number }
 
@@ -34,7 +34,7 @@ test('health endpoint reports a healthy service without caching', async () => {
   assert.equal(response.headers.get('cache-control'), 'no-store')
 })
 
-test('product endpoint returns the deterministic catalog', async () => {
+test('[TC-202] product endpoint returns the deterministic catalog', async () => {
   const response = await fetch(`${baseUrl}/api/products`)
   const payload = await response.json() as { products: Array<{ id: string; priceCents: number }> }
 
@@ -48,7 +48,7 @@ test('product endpoint returns the deterministic catalog', async () => {
   })
 })
 
-test('order endpoint normalizes customer data and supports readback', async () => {
+test('[TC-203] order endpoint normalizes customer data and supports readback', async () => {
   const createResponse = await fetch(`${baseUrl}/api/orders`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -72,7 +72,7 @@ test('order endpoint normalizes customer data and supports readback', async () =
   assert.deepEqual(read.order, created.order)
 })
 
-test('order endpoint rejects malformed JSON and invalid request shapes', async () => {
+test('[TC-204] order endpoint rejects malformed JSON and invalid request shapes', async () => {
   const malformedResponse = await fetch(`${baseUrl}/api/orders`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -90,7 +90,7 @@ test('order endpoint rejects malformed JSON and invalid request shapes', async (
   assert.deepEqual(await shapeResponse.json(), { error: 'Product, name, and email are required.' })
 })
 
-test('order endpoint validates product, name, and email values', async () => {
+test('[TC-205] order endpoint validates product, name, and email values', async () => {
   const invalidOrders = [
     { productId: 'missing-product', customerName: 'Ada Lovelace', email: 'ada@example.com' },
     { productId: 'field-notebook', customerName: 'A', email: 'ada@example.com' },
@@ -108,7 +108,7 @@ test('order endpoint validates product, name, and email values', async () => {
   }
 })
 
-test('unknown orders and unsupported methods return the expected errors', async () => {
+test('[TC-206] unknown orders and unsupported methods return the expected errors', async () => {
   const missingResponse = await fetch(`${baseUrl}/api/orders/MISSING01`)
   assert.equal(missingResponse.status, 404)
   assert.deepEqual(await missingResponse.json(), { error: 'Order not found.' })
@@ -138,7 +138,7 @@ async function orderCount(): Promise<number> {
   return payload.orderCount
 }
 
-test('an oversized order announced by Content-Length gets 413 and stores nothing', async () => {
+test('[TC-207] an oversized order announced by Content-Length gets 413 and stores nothing', async () => {
   const before = await orderCount()
   const response = await fetch(`${baseUrl}/api/orders`, {
     method: 'POST',
@@ -152,7 +152,7 @@ test('an oversized order announced by Content-Length gets 413 and stores nothing
   assert.equal(await orderCount(), before)
 })
 
-test('an oversized order streamed without Content-Length gets 413 instead of a reset connection', async () => {
+test('[TC-208] an oversized order streamed without Content-Length gets 413 instead of a reset connection', async () => {
   // Regression: the server used to destroy the request when the limit was passed, so a
   // streaming client got ECONNRESET and no answer at all.
   const piece = 'x'.repeat(4_000)
@@ -162,7 +162,7 @@ test('an oversized order streamed without Content-Length gets 413 instead of a r
   assert.deepEqual(JSON.parse(result.body), { error: `Request body is too large (limit ${MAX_BODY_BYTES} bytes).` })
 })
 
-test('an order just under the size limit is still accepted', async () => {
+test('[TC-209] an order just under the size limit is still accepted', async () => {
   const order = JSON.stringify({ productId: 'field-notebook', customerName: 'Ada Lovelace', email: 'ada@example.com' })
   // JSON allows whitespace around values: pad the body to one byte below the limit.
   const body = order.replace('{', '{' + ' '.repeat(MAX_BODY_BYTES - order.length - 1))
@@ -172,7 +172,7 @@ test('an order just under the size limit is still accepted', async () => {
   assert.equal(response.status, 201)
 })
 
-test('root route serves the demo shop page', async () => {
+test('[TC-210] root route serves the demo shop page', async () => {
   const response = await fetch(`${baseUrl}/`)
   const html = await response.text()
 

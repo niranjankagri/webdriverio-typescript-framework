@@ -47,6 +47,11 @@ A portfolio-ready browser automation framework built with WebdriverIO, TypeScrip
 | TC-109 | The server's rejection of an order is shown with its reason | regression |
 | TC-110 | An order the browser's form validation rejects is not sent | regression |
 
+API cases TC-201 to TC-210 (`test/demo/server.test.ts`, the Karate feature shares TC-202, 203, 205 and 207).
+Every case is written out for manual runs, with preconditions, test data, steps and expected
+results, in **[docs/manual-test-cases.md](docs/manual-test-cases.md)**; each automated test carries
+its case ID in its name.
+
 ## Requirements
 
 - Node.js 22.19 or newer and npm.
