@@ -137,6 +137,14 @@ If the Allure CLI is installed, generate a browsable report with:
 allure generate artifacts/allure-results --clean -o artifacts/allure-report
 ```
 
+(Without a global install: `npx allure-commandline generate artifacts/allure-results --clean -o artifacts/allure-report`; Allure needs Java.)
+
+The report of a headless Chrome run (30 Oct 2026): 10 of 10 tests passed, grouped by spec, each named with its test case ID ([docs/manual-test-cases.md](docs/manual-test-cases.md)) and linked to it.
+
+| Overview | Suites, with TC-102 opened |
+|---|---|
+| ![Allure overview: 10 test cases, 100 % passed, three suites, environment Chrome and Node.js](docs/images/allure-overview.png) | ![Allure suites: the ten tests named TC-101 to TC-110, and TC-102 opened with its browser parameter and TC-102 link](docs/images/allure-suites.png) |
+
 ## Mutation checks
 
 Run Stryker against the diagnostic sanitizers:
