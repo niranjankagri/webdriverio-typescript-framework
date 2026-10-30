@@ -3,14 +3,16 @@ Feature: Northstar Supply API
 Background:
   * url baseUrl
 
-Scenario: list the deterministic product catalog
+@TC-202
+Scenario: [TC-202] list the deterministic product catalog
   Given path 'api', 'products'
   When method get
   Then status 200
   And match response.products[*].id contains ['field-notebook', 'desk-lamp', 'travel-mug']
   And match each response.products contains { id: '#string', name: '#string', priceCents: '#number' }
 
-Scenario: create an order and read it back by ID
+@TC-203
+Scenario: [TC-203] create an order and read it back by ID
   Given path 'api', 'orders'
   And request { productId: 'field-notebook', customerName: 'Taylor Karate', email: 'qa+karate@example.test' }
   When method post
@@ -25,14 +27,16 @@ Scenario: create an order and read it back by ID
   And match response.order.id == orderId
   And match response.order.email == 'qa+karate@example.test'
 
-Scenario: reject an invalid product and email
+@TC-205
+Scenario: [TC-205] reject an invalid product and email
   Given path 'api', 'orders'
   And request { productId: 'unknown-product', customerName: 'Taylor Karate', email: 'not-an-email' }
   When method post
   Then status 422
   And match response.error == 'Enter a valid product, name, and email address.'
 
-Scenario: refuse an oversized order with 413 Payload Too Large
+@TC-207
+Scenario: [TC-207] refuse an oversized order with 413 Payload Too Large
   # 10 000 bytes is the API's limit; a 12 000-character name puts the body over it.
   * def longName = karate.repeat(12000, function(){ return 'x' }).join('')
   Given path 'api', 'orders'
