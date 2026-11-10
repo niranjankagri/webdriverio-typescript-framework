@@ -37,5 +37,8 @@
     "@wdio/spec-reporter": "^10.0.0",
     "tsx": "^4.19.0",
     "typescript": "^7.0.2"
+  },
+  "overrides": {
+    "qs": "6.16.1"
   }
 }
